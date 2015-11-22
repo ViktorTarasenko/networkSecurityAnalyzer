@@ -6,6 +6,7 @@ import org.pcap4j.packet.IpV4Packet;
 import org.pcap4j.packet.Packet;
 
 import java.net.Inet4Address;
+import java.net.NetworkInterface;
 import java.util.Collection;
 import java.util.Date;
 
@@ -35,7 +36,6 @@ public class GetIcmpRequestsBroadcastPercent implements NetworkParameterCalculat
                         if (isBroadcast(((IpV4Packet.IpV4Header)pt.getHeader()).getDstAddr())){
                          targetCount++;
                         }
-                        targetCount++;
                         break;
                     }
                     pt = packet.getPayload();
@@ -45,6 +45,11 @@ public class GetIcmpRequestsBroadcastPercent implements NetworkParameterCalculat
         return (double)targetCount / (double)packetsCount;
     }
     private boolean isBroadcast(Inet4Address address) {
-        return false;//todo!!
+        if (address.getAddress().length == 4) {
+            if ((address.getAddress()[3] & 0xFF) == 255){
+                return true;
+            }
+        }
+        return false;
     }
 }
