@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="pcap4j-core-1.6.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/lib/pcap4j-core-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/lib/pcap4j-packetfactory-propertiesbased-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/lib/pcap4j-packetfactory-static-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/lib/pcap4j-packettest-1.6.1-tests.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
