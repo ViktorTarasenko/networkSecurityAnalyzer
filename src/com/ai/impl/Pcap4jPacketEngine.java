@@ -11,15 +11,14 @@ import org.pcap4j.packet.Packet;
 import org.pcap4j.util.NifSelector;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
  */
 public class Pcap4jPacketEngine implements PacketEngine {
+    private Date start;
+    private Date end;
     private List<Packet> packets = new ArrayList<Packet>();
     private PcapNetworkInterface networkInterface;
     private PcapHandle handle;
@@ -30,7 +29,7 @@ public class Pcap4jPacketEngine implements PacketEngine {
         }
         Map<TrafficParams,Double> result = new HashMap<TrafficParams,Double>();
         for (TrafficParams param : TrafficParams.values()) {
-            result.put(param,param.getCalc().calculate(packets));
+            result.put(param,param.getCalc().calculate(packets,start,end));
         }
         return result;
     }
@@ -68,6 +67,8 @@ public class Pcap4jPacketEngine implements PacketEngine {
         if ((handle != null) && (handle.isOpen())) {
             stopCapture();
         }
+        start = null;
+        end = null;
         try {
             networkInterface = new NifSelector().selectNetworkInterface();
         } catch (IOException e) {
@@ -117,6 +118,15 @@ public class Pcap4jPacketEngine implements PacketEngine {
         @Override
         public void gotPacket(Packet packet) {
             packets.add(packet);
+            ProgramConveyr.put(new Runnable() {
+                @Override
+                public void run() {
+                    if (start == null) {
+                        start = handle.getTimestamp();
+                    }
+                    end = handle.getTimestamp();
+                }
+            });
         }
     }
 }

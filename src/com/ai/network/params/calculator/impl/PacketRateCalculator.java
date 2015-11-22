@@ -7,17 +7,11 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
- * Created by victor on 22.11.15.
+ *
  */
-public class AvgPacketLengthCalculator implements NetworkParameterCalculator {
+public class PacketRateCalculator implements NetworkParameterCalculator {
     @Override
     public double calculate(Collection<Packet> packets, Date start, Date end) {
-        double result = 0;
-        for (Packet packet : packets) {
-            result+=packet.length();
-        }
-        result = result / (double) packets.size();
-        return result;
-
+        return (double) packets.size() / (double)(end.getTime() - start.getTime());
     }
 }
