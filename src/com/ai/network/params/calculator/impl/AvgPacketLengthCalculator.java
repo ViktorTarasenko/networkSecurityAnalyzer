@@ -12,6 +12,9 @@ import java.util.Date;
 public class AvgPacketLengthCalculator implements NetworkParameterCalculator {
     @Override
     public double calculate(Collection<Packet> packets, Date start, Date end) {
+        if (packets.size() == 0) {
+            return 0;
+        }
         double result = 0;
         for (Packet packet : packets) {
             result+=packet.length();

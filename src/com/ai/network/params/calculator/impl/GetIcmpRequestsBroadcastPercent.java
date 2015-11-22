@@ -17,6 +17,8 @@ public class GetIcmpRequestsBroadcastPercent implements NetworkParameterCalculat
     @Override
     public double calculate(Collection<Packet> packets, Date start, Date end) {
         int packetsCount = packets.size();
+        if (packetsCount == 0)
+            return 0;
         int targetCount = 0;
         IcmpV4EchoPacket a;
         for (Packet packet : packets) {
@@ -42,7 +44,7 @@ public class GetIcmpRequestsBroadcastPercent implements NetworkParameterCalculat
                 }
             }
         }
-        return (double)targetCount / (double)packetsCount;
+        return ((double)targetCount / (double)packetsCount)*100;
     }
     private boolean isBroadcast(Inet4Address address) {
         if (address.getAddress().length == 4) {
