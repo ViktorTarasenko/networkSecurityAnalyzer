@@ -117,14 +117,15 @@ public class Pcap4jPacketEngine implements PacketEngine {
 
         @Override
         public void gotPacket(Packet packet) {
+            System.out.println(""+packet);
             packets.add(packet);
             ProgramConveyr.put(new Runnable() {
                 @Override
                 public void run() {
                     if (start == null) {
-                        start = handle.getTimestamp();
+                        start = new Date();
                     }
-                    end = handle.getTimestamp();
+                    end = new Date();
                 }
             });
         }

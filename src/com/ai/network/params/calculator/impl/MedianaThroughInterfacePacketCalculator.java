@@ -22,7 +22,7 @@ public class MedianaThroughInterfacePacketCalculator implements NetworkParameter
                     address = ((IpV4Packet.IpV4Header)pt.getHeader()).getDstAddr();
                     break;
                 }
-                pt = packet.getPayload();
+                pt = pt.getPayload();
             }
             if (address == null)
                 continue;

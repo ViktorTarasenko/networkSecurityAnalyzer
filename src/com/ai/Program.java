@@ -21,6 +21,7 @@ public class Program {
         conveyer = new Thread(programConveyr);
         conveyer.start();
         while (true) {
+            System.out.println("enter command");
             command = in.nextInt();
             if (command == 1) {
                 conveyer.interrupt();
@@ -39,11 +40,14 @@ public class Program {
                 });
             }
             if (command == 3) {
+                System.out.println("enter packets number");
+                maxPackets = in.nextInt();
+                final int maxPack = maxPackets;
                 ProgramConveyr.put(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            programConveyr.getEngine().startCapture(maxPackets,null);
+                            programConveyr.getEngine().startCapture(maxPack,null);
                         } catch (PacketCaptureException e) {
                             e.printStackTrace();
                         }
@@ -51,11 +55,14 @@ public class Program {
                 });
             }
             if (command == 4) {
+                System.out.println("enter packets number");
+                maxPackets = in.nextInt();
+                final int maxPack = maxPackets;
                 ProgramConveyr.put(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            programConveyr.getEngine().resumeCapture(maxPackets,null);
+                            programConveyr.getEngine().resumeCapture(maxPack,null);
                         } catch (PacketCaptureException e) {
                             e.printStackTrace();
                         }
@@ -67,7 +74,12 @@ public class Program {
                     @Override
                     public void run() {
                         try {
+                            System.out.println("five ");
                             Map<TrafficParams,Double> params = programConveyr.getEngine().getParams();
+                            System.out.println("size "+params.size());
+                            for (TrafficParams trafficParams : params.keySet()) {
+                                System.out.println(trafficParams+" "+params.get(trafficParams));
+                            }
                         } catch (PacketCaptureException e) {
                             e.printStackTrace();
                         }

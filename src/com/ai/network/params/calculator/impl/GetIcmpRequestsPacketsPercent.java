@@ -29,7 +29,7 @@ public class GetIcmpRequestsPacketsPercent implements NetworkParameterCalculator
                     targetCount++;
                     break;
                 }
-                pt = packet.getPayload();
+                pt = pt.getPayload();
             }
         }
         return ((double)targetCount / (double)packetsCount)*100;

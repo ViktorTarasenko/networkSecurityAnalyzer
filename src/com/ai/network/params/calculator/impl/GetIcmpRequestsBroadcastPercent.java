@@ -29,7 +29,7 @@ public class GetIcmpRequestsBroadcastPercent implements NetworkParameterCalculat
                     icmp = true;
                     break;
                 }
-                pt = packet.getPayload();
+                pt = pt.getPayload();
             }
             if (icmp) {
                pt = packet;
@@ -40,7 +40,7 @@ public class GetIcmpRequestsBroadcastPercent implements NetworkParameterCalculat
                         }
                         break;
                     }
-                    pt = packet.getPayload();
+                    pt = pt.getPayload();
                 }
             }
         }
