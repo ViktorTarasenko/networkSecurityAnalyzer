@@ -1,8 +1,10 @@
 package com.ai.iface;
 
+import com.ai.CommonAttackType;
 import com.ai.OnPacketCaptureEndListener;
 import com.ai.TrafficParams;
 import com.ai.exception.PacketCaptureException;
+import com.ai.exception.WrongEgineStateException;
 
 import java.util.Map;
 
@@ -15,4 +17,5 @@ public interface PacketEngine {
     public void stopCapture() throws PacketCaptureException;
     public void reset();
     public void resumeCapture(int maxPackets,OnPacketCaptureEndListener listener) throws PacketCaptureException;
+    public double[] getVectorParams(CommonAttackType attackType) throws PacketCaptureException;
 }

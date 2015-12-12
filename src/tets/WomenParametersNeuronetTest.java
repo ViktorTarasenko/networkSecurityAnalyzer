@@ -4,13 +4,16 @@ import com.ai.neural.MultiLayerNeuralNetwork;
 import com.ai.neural.NeuralException;
 import org.junit.Test;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 /**
  *
  */
 
 public class WomenParametersNeuronetTest {
     @Test
-    public void test() throws NeuralException {
+    public void test() throws NeuralException, TransformerException, ParserConfigurationException {
         MultiLayerNeuralNetwork multiLayerNeuralNetwork = new MultiLayerNeuralNetwork(new MultiLayerNeuralNetwork.Layer(3),new MultiLayerNeuralNetwork.Layer(16),new MultiLayerNeuralNetwork.Layer(4));
         //double[][] big = {{157,57},{160,59},{162,60},{165,61},{168,63},{170,65},{173,67},{175,69},{178,71},{180,72},{183,75},{185,76},{188,79},{190,88},{193,83},{10,1000},{10,50},{150,80},{120,80},};
         //double[][] normal = {{157,54},{160,55},{162,56},{165,58},{168,59},{170,61},{173,63},{175,65},{178,66},{180,68},{183,70},{185,72},{188,74},{190,76},{193,78}};
@@ -34,6 +37,7 @@ public class WomenParametersNeuronetTest {
         }
         multiLayerNeuralNetwork.calculateOutput(new double[]{10,0,0});
         System.out.println(multiLayerNeuralNetwork.getOutput()[0]+" "+multiLayerNeuralNetwork.getOutput()[1]+" "+multiLayerNeuralNetwork.getOutput()[2]+" "+multiLayerNeuralNetwork.getOutput()[3]+"");
+        multiLayerNeuralNetwork.save("ddos.neuro");
 
     }
 }

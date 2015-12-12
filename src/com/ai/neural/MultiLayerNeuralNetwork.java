@@ -1,5 +1,22 @@
 package com.ai.neural;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +27,22 @@ import java.util.Random;
  *
  */
 public class MultiLayerNeuralNetwork {
+    public MultiLayerNeuralNetwork(String filename) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(new File(filename));
+        NodeList nodeListLayers = doc.getElementsByTagName("layer");
+        for (int i = 0;i < nodeListLayers.getLength();++i) {
+            this.layers.add(new Layer(Integer.parseInt(nodeListLayers.item(i).getTextContent())));
+        }
+        NodeList nodeListWeights = doc.getElementsByTagName("weight");
+        weights = new double[nodeListWeights.getLength()];
+        for (int i = 0;i < nodeListWeights.getLength();++i) {
+            weights[i] = Double.parseDouble(nodeListWeights.item(i).getTextContent());
+        }
+        initLearningSpeeds();
+        initialized = true;
+    }
     public MultiLayerNeuralNetwork(Layer... layers) {
         for (Layer layer : layers) {
             this.layers.add(layer);
@@ -165,4 +198,34 @@ public class MultiLayerNeuralNetwork {
             return learningSpeed;
         }
     }
+    public void save(String filename) throws ParserConfigurationException, TransformerException {
+
+                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+                Document doc = docBuilder.newDocument();
+                Element rootElement = doc.createElement("neuronet");
+                doc.appendChild(rootElement);
+                Element layers = doc.createElement("layers");
+                rootElement.appendChild(layers);
+                Element weights = doc.createElement("weights");
+                rootElement.appendChild(weights);
+                for (int i = 0;i<this.layers.size();++i) {
+                    Element layer = doc.createElement("layer");
+                    layer.setTextContent(Integer.toString(this.layers.get(i).getDimension()));
+                    layers.appendChild(layer);
+                }
+                for (int i = 0;i < this.weights.length;++i) {
+                    Element weight = doc.createElement("weight");
+                    weight.setTextContent(Double.toString(this.weights[i]));
+                    weights.appendChild(weight);
+                }
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                DOMSource source = new DOMSource(doc);
+                StreamResult result = new StreamResult(new File(filename));
+                transformer.transform(source, result);
+
+    }
+
+
 }

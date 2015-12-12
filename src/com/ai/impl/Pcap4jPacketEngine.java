@@ -1,5 +1,6 @@
 package com.ai.impl;
 
+import com.ai.CommonAttackType;
 import com.ai.OnPacketCaptureEndListener;
 import com.ai.TrafficParams;
 import com.ai.exception.PacketCaptureException;
@@ -113,6 +114,16 @@ public class Pcap4jPacketEngine implements PacketEngine {
 
 
     }
+
+    @Override
+    public double[] getVectorParams(CommonAttackType attackType) throws PacketCaptureException {
+        Map<TrafficParams,Double> paramsMap = getParams();
+        if (attackType == CommonAttackType.DDOS) {
+            return new double[]{paramsMap.get(TrafficParams.AVG_PACKET_LENGTH),paramsMap.get(TrafficParams.AVG_THROUGH_PACKET_INTERFACE),paramsMap.get(TrafficParams.ICMP_PACKETS_PERCENT),paramsMap.get(TrafficParams.ICMP_REQ_BROADCAST_PERCENT),paramsMap.get(TrafficParams.MEDIANA_THROUGH_INTERFACE_PACKET_CALCULATOR),paramsMap.get(TrafficParams.PACKETS_PER_MILIISONDS),paramsMap.get(TrafficParams.UDP_PACKETS_PERCENT)};
+        }
+        return new double[0];
+    }
+
     private class PcapEnginePacketListener implements PacketListener{
 
         @Override

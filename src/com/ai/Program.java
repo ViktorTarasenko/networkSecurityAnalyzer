@@ -1,9 +1,17 @@
 package com.ai;
 
 import com.ai.exception.PacketCaptureException;
+import com.ai.iface.PacketEngine;
+import com.ai.neural.MultiLayerNeuralNetwork;
+import com.ai.neural.NeuralException;
 import com.ai.utils.concurrent.ProgramConveyr;
 import org.pcap4j.core.PcapNetworkInterface;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -12,8 +20,19 @@ import java.util.Scanner;
  */
 public class Program {
     private static Thread conveyer = null;
-
-    public static void main(String[] args) {
+    private static MultiLayerNeuralNetwork ddosNetwork;
+    private static final String DDOS_NEURONET_FILE = "ddos.neuro";
+    private static void  init() throws IOException, SAXException, ParserConfigurationException {
+        File file = new File(DDOS_NEURONET_FILE);
+        if(file.exists() && !file.isDirectory()) {
+            ddosNetwork = new MultiLayerNeuralNetwork(DDOS_NEURONET_FILE);
+        }
+        else {
+            ddosNetwork = new MultiLayerNeuralNetwork(new MultiLayerNeuralNetwork.Layer(7),new MultiLayerNeuralNetwork.Layer(14),new MultiLayerNeuralNetwork.Layer(5));
+        }
+    }
+    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+        init();
         int command = 1;
         int maxPackets = 0;
         Scanner in = new Scanner(System.in);
@@ -62,7 +81,12 @@ public class Program {
                     @Override
                     public void run() {
                         try {
-                            programConveyr.getEngine().resumeCapture(maxPack,null);
+                            programConveyr.getEngine().resumeCapture(maxPack, new OnPacketCaptureEndListener() {
+                                @Override
+                                public void onEndCapture() {
+
+                                }
+                            });
                         } catch (PacketCaptureException e) {
                             e.printStackTrace();
                         }
@@ -87,5 +111,83 @@ public class Program {
                 });
             }
         }
+    }
+    private class OnPacketCaptureEndListenerImpl implements com.ai.OnPacketCaptureEndListener {
+        public OnPacketCaptureEndListenerImpl(PacketEngine packetEngine) {
+            this.packetEngine = packetEngine;
+        }
+
+        private PacketEngine packetEngine;
+        @Override
+        public void onEndCapture() {
+            try {
+                double[] ddosVector = packetEngine.getVectorParams(CommonAttackType.DDOS);
+                int choice = 0;
+                Scanner in = new Scanner(System.in);
+                System.out.print("нажмите 1 для обучения 2 для распознавания");
+                choice = in.nextInt();
+                if (choice == 1) {
+                    int attackType = 0;
+                    System.out.print("выберите тип ddos атаки 1- ping flood, 2- icmp- flood, 3- udp flood, 4 - другой тип, 5- нет атаки");
+                    while ((attackType < 1) || (attackType > 5)){
+                        attackType = in.nextInt();
+                    }
+                    try {
+                        ddosNetwork.backPropLearn(ddosVector,convertToDdosOutputVector(attackType));
+                        ddosNetwork.save(DDOS_NEURONET_FILE);
+                    } catch (ParserConfigurationException e) {
+                        e.printStackTrace();
+                    } catch (TransformerException e) {
+                        e.printStackTrace();
+                    } catch (NeuralException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+                else {
+                    try {
+                        ddosNetwork.calculateOutput(ddosVector);
+                        double[] resultVector = ddosNetwork.getOutput();
+                        System.out.println(printDddosOutputVector(resultVector));
+                    } catch (NeuralException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (PacketCaptureException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String printDddosOutputVector(double[] resultVector) {
+        int pos = 0;
+        for (int i = 1;i < resultVector.length;++i) {
+            if (resultVector[i] > resultVector[pos])
+                    pos = i;
+        }
+        ++pos;
+        if (pos == 1) {
+            return "ping flood";
+        }
+        if (pos == 2) {
+            return "icmp flood";
+        }
+        if (pos == 3) {
+            return "udp flood";
+        }
+        if (pos == 4) {
+            return "другой тип ddos атаки";
+        }
+        if (pos == 5) {
+            return "нет ddos атаки";
+        }
+        return "";
+    }
+
+    private double[] convertToDdosOutputVector(int attackType) {
+        double[] result = new double[]{0d,0d,0d,0d,0d};
+        result[attackType - 1] = 1;
+        return result;
     }
 }
