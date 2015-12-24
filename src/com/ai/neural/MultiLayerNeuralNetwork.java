@@ -107,7 +107,8 @@ public class MultiLayerNeuralNetwork {
             sigmas = new double[layers.get(i).dimension];
             if (i == layers.size() - 1) {
                 for (int j = 0; j < layers.get(i).dimension;++j){
-                    sigmas[j] = -(requiredOutput[j] - layers.get(i).getVector()[j]) * layers.get(i).getVector()[j] * (1 - layers.get(i).getVector()[j]);
+                    sigmas[j] = -(requiredOutput[j] - layers.get(i).getVector()[j]) * layers.get(i).getVector()[j] *
+                            (1 - layers.get(i).getVector()[j]);
                 }
             }
             else {
@@ -123,7 +124,9 @@ public class MultiLayerNeuralNetwork {
             for (int j = 0; j < layers.get(i).dimension;++j){
                 for (int k = 0; k < layers.get(i-1).dimension;++k){
                     double proizv = sigmas[j]*layers.get(i-1).getVector()[k];
-                    weights[calcWeightPosition(i-1,i,k,j)] = weights[calcWeightPosition(i-1,i,k,j)] - layers.get(i).learningSpeed*proizv;
+                    weights[calcWeightPosition(i-1,i,k,j)] = weights[calcWeightPosition(i-1,i,k,j)] -
+                            layers.get(i).learningSpeed*
+                            proizv;
                 }
             }
         }
@@ -132,7 +135,6 @@ public class MultiLayerNeuralNetwork {
     }
     public double activationFunction(double val) {
         return 1/(1+Math.exp(-0.5*val));
-        //return val < 0 ? 0 : 1;
     }
 
 

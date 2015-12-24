@@ -66,7 +66,7 @@ public class Program {
                     @Override
                     public void run() {
                         try {
-                            programConveyr.getEngine().startCapture(maxPack,null);
+                            programConveyr.getEngine().startCapture(maxPack,new OnPacketCaptureEndListenerImpl(programConveyr.getEngine()));
                         } catch (PacketCaptureException e) {
                             e.printStackTrace();
                         }
@@ -81,12 +81,7 @@ public class Program {
                     @Override
                     public void run() {
                         try {
-                            programConveyr.getEngine().resumeCapture(maxPack, new OnPacketCaptureEndListener() {
-                                @Override
-                                public void onEndCapture() {
-
-                                }
-                            });
+                            programConveyr.getEngine().resumeCapture(maxPack, new OnPacketCaptureEndListenerImpl(programConveyr.getEngine()));
                         } catch (PacketCaptureException e) {
                             e.printStackTrace();
                         }
@@ -112,7 +107,7 @@ public class Program {
             }
         }
     }
-    private class OnPacketCaptureEndListenerImpl implements com.ai.OnPacketCaptureEndListener {
+    private static class OnPacketCaptureEndListenerImpl implements com.ai.OnPacketCaptureEndListener {
         public OnPacketCaptureEndListenerImpl(PacketEngine packetEngine) {
             this.packetEngine = packetEngine;
         }
@@ -160,7 +155,7 @@ public class Program {
         }
     }
 
-    private String printDddosOutputVector(double[] resultVector) {
+    private static String printDddosOutputVector(double[] resultVector) {
         int pos = 0;
         for (int i = 1;i < resultVector.length;++i) {
             if (resultVector[i] > resultVector[pos])
@@ -185,7 +180,7 @@ public class Program {
         return "";
     }
 
-    private double[] convertToDdosOutputVector(int attackType) {
+    private static double[] convertToDdosOutputVector(int attackType) {
         double[] result = new double[]{0d,0d,0d,0d,0d};
         result[attackType - 1] = 1;
         return result;

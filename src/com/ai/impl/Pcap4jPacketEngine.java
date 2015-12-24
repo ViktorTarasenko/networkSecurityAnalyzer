@@ -87,7 +87,22 @@ public class Pcap4jPacketEngine implements PacketEngine {
             @Override
             public void run() {
                 try {
-                    handle.loop(maxPackets,new PcapEnginePacketListener());
+                    handle.loop(maxPackets, new PacketListener() {
+                        @Override
+                        public void gotPacket(Packet packet) {
+                            System.out.println(""+packet);
+                            packets.add(packet);
+                            ProgramConveyr.put(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (start == null) {
+                                        start = new Date();
+                                    }
+                                    end = new Date();
+                                }
+                            });
+                        }
+                    });
                 } catch (InterruptedException e) {
                    e.printStackTrace();
                 } catch (PcapNativeException e) {
