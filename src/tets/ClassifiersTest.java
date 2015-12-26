@@ -41,7 +41,8 @@ public class ClassifiersTest{
             multiLayerNeuralNetwork.backPropLearn(nothing[i],new double[]{0,0,0,1});
         }
         multiLayerNeuralNetwork.calculateOutput(new double[]{10,0,0});
-        System.out.println(multiLayerNeuralNetwork.getOutput()[0]+" "+multiLayerNeuralNetwork.getOutput()[1]+" "+multiLayerNeuralNetwork.getOutput()[2]+" "+multiLayerNeuralNetwork.getOutput()[3]+"");
+        System.out.println(multiLayerNeuralNetw
+        ork.getOutput()[0]+" "+multiLayerNeuralNetwork.getOutput()[1]+" "+multiLayerNeuralNetwork.getOutput()[2]+" "+multiLayerNeuralNetwork.getOutput()[3]+"");
         multiLayerNeuralNetwork.save("ddos.neuro");
 
     }*/
@@ -50,10 +51,10 @@ public class ClassifiersTest{
         SvmClassifier svmClassifier = new SvmClassifier("/home/victor/test.model");
         double[][] attack = {{50,1,1},{90,1,2},{80,0,1}};
         double[][] hide = {{30,1,1},{60,1,2},{40,0,1}};
-        double all[][] = {{0.9},{0.8},{0.7},{0.6},{0.5},{0.4}};
-        double[] allValues = {1,1,1,-1,-1,-1};
+        double all[][] = {{0.9,0.9},{0.8,0.8},{0.7,0.7},{0.6,0.6},{0.5,0.5},{0.4,0.4}};
+        double[] allValues = {2,1,1,-1,-1,-1};
         svmClassifier.learn(all,allValues);
-        System.out.println("result "+svmClassifier.predict(new double[]{0.68}));
+        System.out.println("result "+svmClassifier.predict(new double[]{1,1}));
     }
 }
 

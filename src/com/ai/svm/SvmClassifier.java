@@ -36,6 +36,7 @@ public class SvmClassifier {
         File f = new File(filename);
         if(f.exists() && !f.isDirectory()) {
            readFromFile(filename);
+            System.out.println("read file");
         }
 
     }
@@ -43,8 +44,13 @@ public class SvmClassifier {
          svm.svm_save_model(filename,model);
     }
     public void learn(double[][] input,double[] requiredOutput) throws IOException {
+        if (model != null) {
+            //System.out.println("indice "+model.sv_indices.length);
+
+        }
         svm_problem svm_problem = transformInput(input,requiredOutput);
         model = svm.svm_train(svm_problem,this.param);
+       // System.out.println("indice "+model.sv_indices[5]);
         save(filename);
 
     }
