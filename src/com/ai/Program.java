@@ -33,6 +33,7 @@ public class Program {
     }
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
         init();
+        System.out.println("started neural program");
         int command = 1;
         int maxPackets = 0;
         Scanner in = new Scanner(System.in);
@@ -43,8 +44,9 @@ public class Program {
             System.out.println("enter command");
             command = in.nextInt();
             if (command == 1) {
-                conveyer.interrupt();
-                break;
+            //    conveyer.interrupt();
+              //  System.out.println("interrupted");
+               // break;
             }
             if (command == 2) {
                 ProgramConveyr.put(new Runnable() {
@@ -128,8 +130,10 @@ public class Program {
                         attackType = in.nextInt();
                     }
                     try {
+                        System.out.println("starting learning");
                         ddosNetwork.backPropLearn(ddosVector,convertToDdosOutputVector(attackType));
                         ddosNetwork.save(DDOS_NEURONET_FILE);
+                        System.out.println("learning completed");
                     } catch (ParserConfigurationException e) {
                         e.printStackTrace();
                     } catch (TransformerException e) {

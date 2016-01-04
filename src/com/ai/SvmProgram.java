@@ -2,22 +2,17 @@ package com.ai;
 
 import com.ai.exception.PacketCaptureException;
 import com.ai.iface.PacketEngine;
-import com.ai.neural.MultiLayerNeuralNetwork;
-import com.ai.neural.NeuralException;
 import com.ai.svm.SvmClassifier;
 import com.ai.svm.VectorStorage;
 import com.ai.utils.concurrent.ProgramConveyr;
-import org.pcap4j.core.PcapNetworkInterface;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Vector;
 
 /**
  * Created by victor on 22.11.15.
@@ -35,7 +30,7 @@ public class SvmProgram {
     private static final String PING_FLOOD_FILE = "ping_flood_ddos.vectors";
     private static final String ICMP_FLOOD_FILE = "icmp_flood_ddos.vectors";
     private static final String UDP_FLOOD_FILE = "udp_flood_ddos.vectors";
-    private static final String OTHER_FLOOD_FILE = "other_flood_ddos.vectors";
+    private static final String OTHER_DDOS_FILE = "other_ddos.vectors";
     private static void  init() throws IOException, SAXException, ParserConfigurationException, ClassNotFoundException {
         pingFloodClassifier = new SvmClassifier("ping_flood.model");
         icmpFloodClassifier = new SvmClassifier("icmp_flood.model");
@@ -44,6 +39,10 @@ public class SvmProgram {
         File file = new File(PING_FLOOD_FILE);
         if(file.exists() && !file.isDirectory()) {
                 pingFloodStorage = (VectorStorage) SerializeUtils.getObject(PING_FLOOD_FILE);
+            System.out.println("ping storage "+pingFloodStorage.getVectors().size()+" "+pingFloodStorage.getResults().size());
+            for (int i = 0;i<pingFloodStorage.getResults().size();++i) {
+                System.out.println(pingFloodStorage.getVectors().get(i)[0] + " "+ pingFloodStorage.getVectors().get(i)[1]+" "+pingFloodStorage.getVectors().get(i)[2]+" "+pingFloodStorage.getVectors().get(i)[3]+" "+pingFloodStorage.getVectors().get(i)[4]+" "+pingFloodStorage.getVectors().get(i)[5]+" "+pingFloodStorage.getVectors().get(i)[6]);
+            }
         }
         else {
             pingFloodStorage = new VectorStorage(new ArrayList<double[]>(),new ArrayList<Double>());
@@ -62,9 +61,9 @@ public class SvmProgram {
         else {
             udpFloodStorage = new VectorStorage(new ArrayList<double[]>(),new ArrayList<Double>());
         }
-        file = new File(OTHER_FLOOD_FILE);
+        file = new File(OTHER_DDOS_FILE);
         if(file.exists() && !file.isDirectory()) {
-           otherDdosStorage = (VectorStorage) SerializeUtils.getObject(OTHER_FLOOD_FILE);
+           otherDdosStorage = (VectorStorage) SerializeUtils.getObject(OTHER_DDOS_FILE);
         }
         else {
             otherDdosStorage = new VectorStorage(new ArrayList<double[]>(),new ArrayList<Double>());
@@ -82,8 +81,9 @@ public class SvmProgram {
             System.out.println("enter command");
             command = in.nextInt();
             if (command == 1) {
-                conveyer.interrupt();
-                break;
+             //   conveyer.interrupt();
+               // System.out.println("interrupted");
+                //break;
             }
             if (command == 2) {
                 ProgramConveyr.put(new Runnable() {
@@ -158,14 +158,15 @@ public class SvmProgram {
                 double[] ddosVector = packetEngine.getVectorParams(CommonAttackType.DDOS);
                 int choice = 0;
                 Scanner in = new Scanner(System.in);
-                System.out.print("нажмите 1 для обучения 2 для распознавания");
+                System.out.print("нажмите 1 для обучения 2 для распознавания ");
                 choice = in.nextInt();
                 if (choice == 1) {
                     int attackType = 0;
-                    System.out.print("выберите тип ddos атаки 1- ping flood, 2- icmp- flood, 3- udp flood, 4 - другой тип, 5- нет атаки");
+                    System.out.print("выберите тип ddos атаки 1- ping flood, 2- icmp- flood, 3- udp flood, 4 - другой тип, 5- нет атаки ");
                     while ((attackType < 1) || (attackType > 5)){
                         attackType = in.nextInt();
                     }
+                    System.out.println("starting learning");
                         pingFloodStorage.addVector(ddosVector,attackType == 1 ? 1 : -1);
                         icmpFloodStorage.addVector(ddosVector,attackType == 2 ? 1 : -1);
                         udpFloodStorage.addVector(ddosVector,attackType == 3 ? 1 : -1);
@@ -173,7 +174,8 @@ public class SvmProgram {
                         SerializeUtils.saveObject(icmpFloodStorage,ICMP_FLOOD_FILE);
                         SerializeUtils.saveObject(pingFloodStorage,PING_FLOOD_FILE);
                         SerializeUtils.saveObject(udpFloodStorage,UDP_FLOOD_FILE);
-                        SerializeUtils.saveObject(pingFloodStorage,PING_FLOOD_FILE);
+                        SerializeUtils.saveObject(otherDdosStorage, OTHER_DDOS_FILE);
+                    System.out.println("learning completed");
 
 
 
@@ -205,46 +207,19 @@ public class SvmProgram {
                             isAttack = true;
                         }
                         if (!isAttack) {
-                            System.out.println("no flood");
+                            System.out.println("no attacaks "+isPingFlood+" "+isIcmpFlood+" "+isUdpFlood+" "+isOtherFlood);
                         }
 
                 }
+                System.out.println("continuing");
             } catch (PacketCaptureException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
 
-    private static String printDddosOutputVector(double[] resultVector) {
-        int pos = 0;
-        for (int i = 1;i < resultVector.length;++i) {
-            if (resultVector[i] > resultVector[pos])
-                pos = i;
-        }
-        ++pos;
-        if (pos == 1) {
-            return "ping flood";
-        }
-        if (pos == 2) {
-            return "icmp flood";
-        }
-        if (pos == 3) {
-            return "udp flood";
-        }
-        if (pos == 4) {
-            return "другой тип ddos атаки";
-        }
-        if (pos == 5) {
-            return "нет ddos атаки";
-        }
-        return "";
-    }
 
-    private static double[] convertToDdosOutputVector(int attackType) {
-        double[] result = new double[]{0d,0d,0d,0d,0d};
-        result[attackType - 1] = 1;
-        return result;
-    }
+
 }

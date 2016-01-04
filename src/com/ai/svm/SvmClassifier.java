@@ -48,6 +48,7 @@ public class SvmClassifier {
             //System.out.println("indice "+model.sv_indices.length);
 
         }
+
         svm_problem svm_problem = transformInput(input,requiredOutput);
         model = svm.svm_train(svm_problem,this.param);
        // System.out.println("indice "+model.sv_indices[5]);

@@ -25,8 +25,9 @@ public class ProgramConveyr implements Runnable{
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 queue.take().run();
+                System.out.println("took");
             } catch (InterruptedException e) {
-               // e.printStackTrace();
+                e.printStackTrace();
             }
         }
     }
