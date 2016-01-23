@@ -3,7 +3,7 @@ package com.ai.exception;
 /**
  *
  */
-public class PacketCaptureException extends Exception{
+public class PacketCaptureException extends Exception {
     public PacketCaptureException() {
     }
 

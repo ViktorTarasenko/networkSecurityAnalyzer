@@ -6,7 +6,7 @@ import com.ai.network.params.calculator.impl.*;
 /**
  * Created by victor on 22.11.15.
  */
-public enum  TrafficParams {
+public enum TrafficParams {
     AVG_PACKET_LENGTH(new AvgPacketLengthCalculator()),
     PACKETS_PER_MILIISONDS(new PacketRateCalculator()),
     AVG_THROUGH_PACKET_INTERFACE(new AverageThroughInterfacePacketCalculator()),
@@ -15,10 +15,11 @@ public enum  TrafficParams {
     UDP_PACKETS_PERCENT(new GetUdpPercentCalculator()),
     MEDIANA_THROUGH_INTERFACE_PACKET_CALCULATOR(new MedianaThroughInterfacePacketCalculator());
 
+    private NetworkParameterCalculator calc;
+
     TrafficParams(NetworkParameterCalculator calc) {
         this.calc = calc;
     }
-    private NetworkParameterCalculator calc;
 
     public NetworkParameterCalculator getCalc() {
         return calc;

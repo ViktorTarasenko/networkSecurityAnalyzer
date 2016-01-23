@@ -29,6 +29,6 @@ public class GetUdpPercentCalculator implements NetworkParameterCalculator {
                 pt = pt.getPayload();
             }
         }
-        return ((double)targetCount / (double)packetsCount)*100;
+        return ((double) targetCount / (double) packetsCount) * 100;
     }
 }

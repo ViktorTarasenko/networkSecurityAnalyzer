@@ -23,14 +23,15 @@ public class Pcap4jPacketEngine implements PacketEngine {
     private List<Packet> packets = new ArrayList<Packet>();
     private PcapNetworkInterface networkInterface;
     private PcapHandle handle;
+
     @Override
     public Map<TrafficParams, Double> getParams() throws PacketCaptureException {
         if ((handle != null) && (handle.isOpen())) {
             throw new WrongEgineStateException();
         }
-        Map<TrafficParams,Double> result = new HashMap<TrafficParams,Double>();
+        Map<TrafficParams, Double> result = new HashMap<TrafficParams, Double>();
         for (TrafficParams param : TrafficParams.values()) {
-            result.put(param,param.getCalc().calculate(packets,start,end));
+            result.put(param, param.getCalc().calculate(packets, start, end));
         }
         return result;
     }
@@ -38,7 +39,7 @@ public class Pcap4jPacketEngine implements PacketEngine {
     @Override
     public void startCapture(int maxPackets, OnPacketCaptureEndListener listener) throws PacketCaptureException {
         reset();
-        resumeCapture(maxPackets,listener);
+        resumeCapture(maxPackets, listener);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class Pcap4jPacketEngine implements PacketEngine {
             try {
                 handle.breakLoop();
             } catch (NotOpenException e) {
-                throw  new PacketCaptureException(e);
+                throw new PacketCaptureException(e);
             }
         }
         handle.close();
@@ -64,7 +65,7 @@ public class Pcap4jPacketEngine implements PacketEngine {
 
 
     @Override
-    public void resumeCapture(int maxPackets,final OnPacketCaptureEndListener listener) throws PacketCaptureException {
+    public void resumeCapture(int maxPackets, final OnPacketCaptureEndListener listener) throws PacketCaptureException {
         if ((handle != null) && (handle.isOpen())) {
             stopCapture();
         }
@@ -90,7 +91,7 @@ public class Pcap4jPacketEngine implements PacketEngine {
                     handle.loop(maxPackets, new PacketListener() {
                         @Override
                         public void gotPacket(Packet packet) {
-                            System.out.println(""+packet);
+                            System.out.println("" + packet);
                             packets.add(packet);
                             ProgramConveyr.put(new Runnable() {
                                 @Override
@@ -104,25 +105,25 @@ public class Pcap4jPacketEngine implements PacketEngine {
                         }
                     });
                 } catch (InterruptedException e) {
-                   e.printStackTrace();
+                    e.printStackTrace();
                 } catch (PcapNativeException e) {
-                   e.printStackTrace();
+                    e.printStackTrace();
                 } catch (NotOpenException e) {
-                   e.printStackTrace();
-                }
-                finally {
+                    e.printStackTrace();
+                } finally {
                     ProgramConveyr.put(
-                    new Runnable() {
-                        public void run(){
-                    try {
-                        stopCapture();
-                        if (listener != null) {
-                            listener.onEndCapture();
-                        }
-                    } catch (PacketCaptureException e1) {
-                        e1.printStackTrace();
-                    }}
-                    });
+                            new Runnable() {
+                                public void run() {
+                                    try {
+                                        stopCapture();
+                                        if (listener != null) {
+                                            listener.onEndCapture();
+                                        }
+                                    } catch (PacketCaptureException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                            });
                 }
             }
         }).start();
@@ -132,18 +133,18 @@ public class Pcap4jPacketEngine implements PacketEngine {
 
     @Override
     public double[] getVectorParams(CommonAttackType attackType) throws PacketCaptureException {
-        Map<TrafficParams,Double> paramsMap = getParams();
+        Map<TrafficParams, Double> paramsMap = getParams();
         if (attackType == CommonAttackType.DDOS) {
-            return new double[]{paramsMap.get(TrafficParams.AVG_PACKET_LENGTH),paramsMap.get(TrafficParams.AVG_THROUGH_PACKET_INTERFACE),paramsMap.get(TrafficParams.ICMP_PACKETS_PERCENT),paramsMap.get(TrafficParams.ICMP_REQ_BROADCAST_PERCENT),paramsMap.get(TrafficParams.MEDIANA_THROUGH_INTERFACE_PACKET_CALCULATOR),paramsMap.get(TrafficParams.PACKETS_PER_MILIISONDS),paramsMap.get(TrafficParams.UDP_PACKETS_PERCENT)};
+            return new double[]{paramsMap.get(TrafficParams.AVG_PACKET_LENGTH), paramsMap.get(TrafficParams.AVG_THROUGH_PACKET_INTERFACE), paramsMap.get(TrafficParams.ICMP_PACKETS_PERCENT), paramsMap.get(TrafficParams.ICMP_REQ_BROADCAST_PERCENT), paramsMap.get(TrafficParams.MEDIANA_THROUGH_INTERFACE_PACKET_CALCULATOR), paramsMap.get(TrafficParams.PACKETS_PER_MILIISONDS), paramsMap.get(TrafficParams.UDP_PACKETS_PERCENT)};
         }
         return new double[0];
     }
 
-    private class PcapEnginePacketListener implements PacketListener{
+    private class PcapEnginePacketListener implements PacketListener {
 
         @Override
         public void gotPacket(Packet packet) {
-            System.out.println(""+packet);
+            System.out.println("" + packet);
             packets.add(packet);
             ProgramConveyr.put(new Runnable() {
                 @Override

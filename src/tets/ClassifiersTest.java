@@ -1,22 +1,15 @@
 package tets;
 
-import com.ai.neural.MultiLayerNeuralNetwork;
-import com.ai.neural.NeuralException;
 import com.ai.svm.SvmClassifier;
-import libsvm.svm;
 import org.junit.Test;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  *
  */
 
-public class ClassifiersTest{
+public class ClassifiersTest {
     //@Test
     /*public void test() throws NeuralException, TransformerException, ParserConfigurationException {
         MultiLayerNeuralNetwork multiLayerNeuralNetwork = new MultiLayerNeuralNetwork(new MultiLayerNeuralNetwork.Layer(3),new MultiLayerNeuralNetwork.Layer(16),new MultiLayerNeuralNetwork.Layer(4));
@@ -49,12 +42,12 @@ public class ClassifiersTest{
     @Test
     public void test() throws IOException {
         SvmClassifier svmClassifier = new SvmClassifier("/home/victor/test.model");
-        double[][] attack = {{50,1,1},{90,1,2},{80,0,1}};
-        double[][] hide = {{30,1,1},{60,1,2},{40,0,1}};
-        double all[][] = {{0.9,0.9},{0.8,0.8},{0.7,0.7},{0.6,0.6},{0.5,0.5},{0.4,0.4}};
-        double[] allValues = {2,1,1,-1,-1,-1};
-        svmClassifier.learn(all,allValues);
-        System.out.println("result "+svmClassifier.predict(new double[]{1,1}));
+        double[][] attack = {{50, 1, 1}, {90, 1, 2}, {80, 0, 1}};
+        double[][] hide = {{30, 1, 1}, {60, 1, 2}, {40, 0, 1}};
+        double all[][] = {{0.9, 0.9}, {0.8, 0.8}, {0.7, 0.7}, {0.6, 0.6}, {0.5, 0.5}, {0.4, 0.4}};
+        double[] allValues = {2, 1, 1, -1, -1, -1};
+        svmClassifier.learn(all, allValues);
+        System.out.println("result " + svmClassifier.predict(new double[]{1, 1}));
     }
 }
 

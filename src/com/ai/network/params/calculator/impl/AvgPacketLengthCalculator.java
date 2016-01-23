@@ -17,7 +17,7 @@ public class AvgPacketLengthCalculator implements NetworkParameterCalculator {
         }
         double result = 0;
         for (Packet packet : packets) {
-            result+=packet.length();
+            result += packet.length();
         }
         result = result / (double) packets.size();
         return result;

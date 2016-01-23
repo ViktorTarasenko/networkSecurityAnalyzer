@@ -3,7 +3,7 @@ package com.ai.exception;
 /**
  *
  */
-public class WrongEgineStateException extends PacketCaptureException{
+public class WrongEgineStateException extends PacketCaptureException {
     public WrongEgineStateException() {
     }
 

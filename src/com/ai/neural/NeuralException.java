@@ -3,7 +3,7 @@ package com.ai.neural;
 /**
  * Created by victor on 05.12.15.
  */
-public class NeuralException extends Exception{
+public class NeuralException extends Exception {
     public NeuralException() {
     }
 
